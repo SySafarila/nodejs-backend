@@ -2,10 +2,9 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import Joi from "joi";
-import * as jose from "jose";
 import CustomError from "../CustomError";
-import JwtPayloadType from "../types/JwtPayloadType";
 import LoginType from "../types/LoginType";
+import signJwt from "../utils/signJwt";
 
 const loginController = async (req: Request, res: Response) => {
   const { email, password } = req.body as LoginType;
@@ -40,15 +39,7 @@ const loginController = async (req: Request, res: Response) => {
       throw new CustomError("Credentials not match", 401);
     }
 
-    const tokenSecret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const token = await new jose.SignJWT({
-      user_id: findUser.id,
-      randomizer: new Date().getTime(),
-    } as JwtPayloadType)
-      .setProtectedHeader({ alg: "HS256" })
-      .setIssuedAt()
-      .setExpirationTime("6 hours")
-      .sign(tokenSecret);
+    const token = await signJwt(findUser.id);
 
     res.json({
       message: "Login success. Your token valid for 6 hours from now",

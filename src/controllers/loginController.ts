@@ -41,9 +41,20 @@ const loginController = async (req: Request, res: Response) => {
 
     const token = await signJwt(findUser.id);
 
+    await prisma.token.create({
+      data: {
+        token_id: token.payload.token_id,
+        users: {
+          connect: {
+            id: findUser.id,
+          },
+        },
+      },
+    });
+
     res.json({
       message: "Login success. Your token valid for 6 hours from now",
-      token: token,
+      token: token.token,
     });
   } catch (error: any) {
     if (error instanceof Joi.ValidationError) {

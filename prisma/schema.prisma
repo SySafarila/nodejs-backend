@@ -22,6 +22,7 @@ model User {
   updated_at  DateTime  @default(now())
   created_at  DateTime  @default(now())
   roles       Role[]
+  tokens      Token[]
 
   @@map("users")
 }
@@ -45,4 +46,16 @@ model Permission {
   roles      Role[]
 
   @@map("permissions")
+}
+
+model Token {
+  id         Int      @id @default(autoincrement())
+  token_id   String   @db.VarChar(255)
+  is_active  Boolean  @default(true)
+  device     String   @default("-") @db.VarChar(255)
+  updated_at DateTime @default(now())
+  created_at DateTime @default(now())
+  users      User[]
+
+  @@map("tokens")
 }

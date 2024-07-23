@@ -2,8 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import Joi from "joi";
-import CustomError from "../utils/CustomError";
 import RegisterType from "../types/RegisterType";
+import CustomError from "../utils/CustomError";
 
 const registerController = async (req: Request, res: Response) => {
   const { email, password, name } = req.body as RegisterType;

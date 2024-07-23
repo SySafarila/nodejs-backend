@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import Joi from "joi";
-import CustomError from "../CustomError";
+import CustomError from "../utils/CustomError";
 import RegisterType from "../types/RegisterType";
 
 const registerController = async (req: Request, res: Response) => {

@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import Joi from "joi";
-import CustomError from "../CustomError";
+import CustomError from "../utils/CustomError";
 import LoginType from "../types/LoginType";
 import signJwt from "../utils/signJwt";
 

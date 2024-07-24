@@ -9,6 +9,9 @@ async function main() {
       {
         name: "admin-access",
       },
+      {
+        name: "permissions-create",
+      },
     ],
   });
 

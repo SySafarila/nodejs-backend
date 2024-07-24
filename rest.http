@@ -24,3 +24,13 @@ content-type: application/json
     "password": "password",
     "name": "Syahrul"
 }
+
+###
+
+PUT http://localhost:3000/permissions
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IiQyYiQxMCRIOVFqOEJLd2tQMThIZlY2Q0p2c0dPIn0.eyJ1c2VyX2lkIjoxLCJyYW5kb21pemVyIjoxNzIxODQzNTAwNzMxLCJ0b2tlbl9pZCI6IiQyYiQxMCRIOVFqOEJLd2tQMThIZlY2Q0p2c0dPIiwiaWF0IjoxNzIxODQzNTAwLCJleHAiOjE3MjE4NjUxMDB9.GX17HWmIiXT_qmIzu0ceK0bdygEhEmrL58o3dMworX0
+
+{
+    "name": "permissions-read"
+}

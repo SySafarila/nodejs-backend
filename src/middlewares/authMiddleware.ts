@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import { NextFunction, Request } from "express";
-import ResponseType from "../types/ResponseType";
+import SignedResponseType from "../types/SignedResponseType";
 import CustomError from "../utils/CustomError";
 import verifyJwt from "../utils/verifyJwt";
 
 const authMiddleware = async (
   req: Request,
-  res: ResponseType,
+  res: SignedResponseType,
   next: NextFunction
 ) => {
   try {
@@ -15,6 +15,7 @@ const authMiddleware = async (
     const jwt = authorization?.split("Bearer ")[1];
 
     const { payload } = await verifyJwt(jwt!);
+    const { user_id } = payload;
 
     const token = await prisma.token.findFirst({
       where: {
@@ -27,9 +28,38 @@ const authMiddleware = async (
       throw new CustomError("Token invalid", 401);
     }
 
-    res.locals.jwt = jwt;
+    const rolesAndPermissions = await prisma.user.findFirst({
+      where: {
+        id: user_id,
+      },
+      include: {
+        roles: {
+          select: {
+            name: true,
+            permissions: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
-    // set correct permissions array to locals variable
+    const roles: string[] = [];
+    const permissions: string[] = [];
+
+    rolesAndPermissions?.roles.forEach((role) => {
+      roles.push(role.name);
+      role.permissions.forEach((permission) => {
+        permissions.push(permission.name);
+      });
+    });
+
+    res.locals.jwt = jwt;
+    res.locals.user_id = user_id;
+    res.locals.permissions = permissions;
+    res.locals.roles = roles;
 
     return next();
   } catch (error: any) {

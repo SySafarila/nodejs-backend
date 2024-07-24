@@ -15,6 +15,7 @@ async function main() {
   await prisma.role.create({
     data: {
       name: "super-admin",
+      level: 0,
       permissions: {
         connect: {
           name: "admin-access",
@@ -26,6 +27,7 @@ async function main() {
   await prisma.role.create({
     data: {
       name: "admin",
+      level: 1,
       permissions: {
         connect: {
           name: "admin-access",

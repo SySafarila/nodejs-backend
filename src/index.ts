@@ -1,6 +1,7 @@
 import express from "express";
 import loginController from "./controllers/loginController";
 import meController from "./controllers/meController";
+import { storePermission } from "./controllers/permissionController";
 import registerController from "./controllers/registerController";
 import rootController from "./controllers/rootController";
 import authMiddleware from "./middlewares/authMiddleware";
@@ -19,7 +20,7 @@ app.put(
   "/permissions",
   authMiddleware,
   can("permissions-create"),
-  rootController
+  storePermission
 );
 
 app.listen(port, () => {

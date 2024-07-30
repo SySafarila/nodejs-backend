@@ -36,6 +36,7 @@ const authMiddleware = async (
         roles: {
           select: {
             name: true,
+            level: true,
             permissions: {
               select: {
                 name: true,
@@ -46,11 +47,19 @@ const authMiddleware = async (
       },
     });
 
+    let role_level_peak: number | undefined = undefined;
     const roles: string[] = [];
     const permissions: string[] = [];
 
     rolesAndPermissions?.roles.forEach((role) => {
       roles.push(role.name);
+      if (!role_level_peak) {
+        role_level_peak = role.level;
+      } else {
+        if (role.level < role_level_peak) {
+          role_level_peak = role.level;
+        }
+      }
       role.permissions.forEach((permission) => {
         permissions.push(permission.name);
       });
@@ -60,6 +69,7 @@ const authMiddleware = async (
     res.locals.user_id = user_id;
     res.locals.permissions = permissions;
     res.locals.roles = roles;
+    res.locals.role_level_peak = role_level_peak;
 
     return next();
   } catch (error: any) {
@@ -69,8 +79,8 @@ const authMiddleware = async (
       });
       return;
     }
-    res.status(400).json({
-      message: error.message ?? "Bad request",
+    res.status(401).json({
+      message: error.message ?? "Unauthorized request",
     });
   }
 };

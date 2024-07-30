@@ -6,6 +6,7 @@ interface SignedResponseType extends Response {
     jwt?: string;
     permissions?: string[];
     roles?: string[];
+    role_level_peak?: number; // lower is higher or 1 > 2
   };
 }
 

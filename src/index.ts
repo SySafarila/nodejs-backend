@@ -1,7 +1,12 @@
 import express from "express";
 import loginController from "./controllers/loginController";
 import meController from "./controllers/meController";
-import { storePermission } from "./controllers/permissionController";
+import {
+  deletePermission,
+  readPermission,
+  storePermission,
+  updatePermission,
+} from "./controllers/permissionController";
 import registerController from "./controllers/registerController";
 import rootController from "./controllers/rootController";
 import authMiddleware from "./middlewares/authMiddleware";
@@ -21,6 +26,24 @@ app.put(
   authMiddleware,
   can("permissions-create"),
   storePermission
+);
+app.patch(
+  "/permissions",
+  authMiddleware,
+  can("permissions-update"),
+  updatePermission
+);
+app.delete(
+  "/permissions",
+  authMiddleware,
+  can("permissions-delete"),
+  deletePermission
+);
+app.get(
+  "/permissions",
+  authMiddleware,
+  can("permissions-read"),
+  readPermission
 );
 
 app.listen(port, () => {

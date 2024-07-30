@@ -32,5 +32,32 @@ content-type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IiQyYiQxMCRIeWdwSG5QWnZtUVguZEJHWGhXcDJ1In0.eyJ1c2VyX2lkIjoxLCJyYW5kb21pemVyIjoxNzIyMTQ3NjE0MjE0LCJ0b2tlbl9pZCI6IiQyYiQxMCRIeWdwSG5QWnZtUVguZEJHWGhXcDJ1IiwiaWF0IjoxNzIyMTQ3NjE0LCJleHAiOjE3MjIxNjkyMTR9.0GBT9RQVsQylT41Ag33KSDdg05d8x-a6O6O_j6XQkLE
 
 {
-    "name": "permissions-read"
+    "name": "permissions-readxx"
+}
+
+###
+
+GET http://localhost:3000/permissions
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IiQyYiQxMCRkUmxrZ3M5WWFaYmsyOHRNTXJ4bmV1In0.eyJ1c2VyX2lkIjoxLCJyYW5kb21pemVyIjoxNzIyMzEwMDgzNzQzLCJ0b2tlbl9pZCI6IiQyYiQxMCRkUmxrZ3M5WWFaYmsyOHRNTXJ4bmV1IiwiaWF0IjoxNzIyMzEwMDgzLCJleHAiOjE3MjIzMzE2ODN9.Ca39UqnpJSGAUlRCjR1QhlBGrCHiWHUoqPmnfcBpWAU
+
+###
+
+PATCH  http://localhost:3000/permissions
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IiQyYiQxMCRkUmxrZ3M5WWFaYmsyOHRNTXJ4bmV1In0.eyJ1c2VyX2lkIjoxLCJyYW5kb21pemVyIjoxNzIyMzEwMDgzNzQzLCJ0b2tlbl9pZCI6IiQyYiQxMCRkUmxrZ3M5WWFaYmsyOHRNTXJ4bmV1IiwiaWF0IjoxNzIyMzEwMDgzLCJleHAiOjE3MjIzMzE2ODN9.Ca39UqnpJSGAUlRCjR1QhlBGrCHiWHUoqPmnfcBpWAU
+
+{
+    "name": "permissions-readx",
+    "new_name": "permissions-readx2"
+}
+
+###
+
+DELETE   http://localhost:3000/permissions
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IiQyYiQxMCRkUmxrZ3M5WWFaYmsyOHRNTXJ4bmV1In0.eyJ1c2VyX2lkIjoxLCJyYW5kb21pemVyIjoxNzIyMzEwMDgzNzQzLCJ0b2tlbl9pZCI6IiQyYiQxMCRkUmxrZ3M5WWFaYmsyOHRNTXJ4bmV1IiwiaWF0IjoxNzIyMzEwMDgzLCJleHAiOjE3MjIzMzE2ODN9.Ca39UqnpJSGAUlRCjR1QhlBGrCHiWHUoqPmnfcBpWAU
+
+{
+    "name": "permissions-readx2"
 }

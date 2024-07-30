@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import Joi from "joi";
 import RegisterType from "../types/RegisterType";
 import CustomError from "../utils/CustomError";
+import errorHandler from "../utils/errorHandler";
 
 const registerController = async (req: Request, res: Response) => {
   const { email, password, name } = req.body as RegisterType;
@@ -48,22 +49,10 @@ const registerController = async (req: Request, res: Response) => {
       message: "Register success",
     });
   } catch (error: any) {
-    if (error instanceof Joi.ValidationError) {
-      res.status(400).json({
-        message: error.message,
-      });
-      return;
-    }
+    const handler = errorHandler(error);
 
-    if (error instanceof CustomError) {
-      res.status(error.code).json({
-        message: error.message,
-      });
-      return;
-    }
-
-    res.status(400).json({
-      message: "Bad request",
+    res.status(handler.code).json({
+      message: handler.message,
     });
   }
 };

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import Joi from "joi";
 import CustomError from "../utils/CustomError";
+import errorHandler from "../utils/errorHandler";
 
 type StoreType = {
   name: string;
@@ -46,17 +47,11 @@ export const storePermission = async (req: Request, res: Response) => {
     });
     return;
   } catch (error: any) {
-    if (error instanceof Joi.ValidationError) {
-      res.status(400).json({
-        message: error.message,
-      });
-      return;
-    }
+    const handler = errorHandler(error);
 
-    res.status(400).json({
-      message: error.message ?? "Bad request",
+    res.status(handler.code).json({
+      message: handler.message,
     });
-    return;
   }
 };
 
@@ -108,17 +103,11 @@ export const updatePermission = async (req: Request, res: Response) => {
     });
     return;
   } catch (error: any) {
-    if (error instanceof Joi.ValidationError) {
-      res.status(400).json({
-        message: error.message,
-      });
-      return;
-    }
+    const handler = errorHandler(error);
 
-    res.status(400).json({
-      message: error.message ?? "Bad request",
+    res.status(handler.code).json({
+      message: handler.message,
     });
-    return;
   }
 };
 
@@ -159,17 +148,11 @@ export const deletePermission = async (req: Request, res: Response) => {
     });
     return;
   } catch (error: any) {
-    if (error instanceof Joi.ValidationError) {
-      res.status(400).json({
-        message: error.message,
-      });
-      return;
-    }
+    const handler = errorHandler(error);
 
-    res.status(400).json({
-      message: error.message ?? "Bad request",
+    res.status(handler.code).json({
+      message: handler.message,
     });
-    return;
   }
 };
 
@@ -188,16 +171,10 @@ export const readPermission = async (req: Request, res: Response) => {
     });
     return;
   } catch (error: any) {
-    if (error instanceof Joi.ValidationError) {
-      res.status(400).json({
-        message: error.message,
-      });
-      return;
-    }
+    const handler = errorHandler(error);
 
-    res.status(400).json({
-      message: error.message ?? "Bad request",
+    res.status(handler.code).json({
+      message: handler.message,
     });
-    return;
   }
 };

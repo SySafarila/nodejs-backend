@@ -2,8 +2,9 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import Joi from "joi";
-import CustomError from "../utils/CustomError";
 import LoginType from "../types/LoginType";
+import CustomError from "../utils/CustomError";
+import errorHandler from "../utils/errorHandler";
 import signJwt from "../utils/signJwt";
 
 const loginController = async (req: Request, res: Response) => {
@@ -57,22 +58,10 @@ const loginController = async (req: Request, res: Response) => {
       token: token.token,
     });
   } catch (error: any) {
-    if (error instanceof Joi.ValidationError) {
-      res.status(400).json({
-        message: error.message,
-      });
-      return;
-    }
+    const handler = errorHandler(error);
 
-    if (error instanceof CustomError) {
-      res.status(error.code).json({
-        message: error.message,
-      });
-      return;
-    }
-
-    res.status(400).json({
-      message: "Bad request",
+    res.status(handler.code).json({
+      message: handler.message,
     });
   }
 };

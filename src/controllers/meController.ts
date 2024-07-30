@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { Request } from "express";
 import SignedResponseType from "../types/SignedResponseType";
+import errorHandler from "../utils/errorHandler";
+import CustomError from "../utils/CustomError";
 
 const meController = async (req: Request, res: SignedResponseType) => {
   const prisma = new PrismaClient();
@@ -12,6 +14,10 @@ const meController = async (req: Request, res: SignedResponseType) => {
         id: user_id,
       },
     });
+
+    if (!user) {
+      throw new CustomError("User not found", 404);
+    }
 
     res.json({
       message: "Success",
@@ -25,8 +31,10 @@ const meController = async (req: Request, res: SignedResponseType) => {
       },
     });
   } catch (error: any) {
-    res.status(400).json({
-      message: "Bad request",
+    const handler = errorHandler(error);
+
+    res.status(handler.code).json({
+      message: handler.message,
     });
   }
 };

@@ -4,7 +4,7 @@ services:
     container_name: mariadb
     environment:
       - MARIADB_ROOT_PASSWORD=password
-      - MARIADB_DATABASE=backend
+      - MARIADB_DATABASE=node
     ports:
       - 3306:3306
     restart: always

@@ -20,6 +20,7 @@ jobs:
           DATABASE_URL: mysql://root:password@localhost:3306/node
       - run: npm ci
       - run: cp .env.github .env
+      - run: npx prisma generate
       - run: npx prisma migrate deploy
       - run: npx prisma db seed
       - run: npm test

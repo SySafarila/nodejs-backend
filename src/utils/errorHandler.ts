@@ -15,6 +15,8 @@ const errorHandler = (error: any): { code: number; message: string } => {
     message = error.message;
   }
 
+  console.error(error)
+
   return {
     code: code ?? 500,
     message: message ?? "Internal server error",

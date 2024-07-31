@@ -4,20 +4,16 @@ import app from "../src/server";
 let token: string = "";
 
 test("POST /auth/register", async () => {
-  try {
-    const res = await request(app)
-      .post("/auth/register")
-      .accept("application/json")
-      .send({
-        email: "syahrul@email.com",
-        password: "password",
-        name: "Syahrul",
-      });
+  const res = await request(app)
+    .post("/auth/register")
+    .accept("application/json")
+    .send({
+      email: "syahrul@email.com",
+      password: "password",
+      name: "Syahrul",
+    });
 
-    expect(res.statusCode).toBe(200);
-  } catch (error) {
-    console.error(error.message);
-  }
+  expect(res.statusCode).toBe(200);
 });
 
 test("POST /auth/login", async () => {

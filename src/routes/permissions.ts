@@ -10,29 +10,10 @@ import can from "../middlewares/permissionMiddleware";
 
 const router = express.Router();
 
-router.put(
-  "/permissions",
-  authMiddleware,
-  can("permissions-create"),
-  storePermission
-);
-router.patch(
-  "/permissions",
-  authMiddleware,
-  can("permissions-update"),
-  updatePermission
-);
-router.delete(
-  "/permissions",
-  authMiddleware,
-  can("permissions-delete"),
-  deletePermission
-);
-router.get(
-  "/permissions",
-  authMiddleware,
-  can("permissions-read"),
-  readPermission
-);
+router.use("/permissions", authMiddleware);
+router.put("/permissions", can("permissions-create"), storePermission);
+router.patch("/permissions", can("permissions-update"), updatePermission);
+router.delete("/permissions", can("permissions-delete"), deletePermission);
+router.get("/permissions", can("permissions-read"), readPermission);
 
 export default router;

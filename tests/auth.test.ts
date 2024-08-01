@@ -37,3 +37,19 @@ test("GET /auth/me", async () => {
 
   expect(res.statusCode).toBe(200);
 });
+
+test("POST /auth/logout", async () => {
+  const res = await request(app)
+    .post("/auth/logout")
+    .accept("application/json")
+    .set("Authorization", `Bearer ${token}`);
+
+  expect(res.statusCode).toBe(200);
+
+  const res2 = await request(app)
+    .get("/auth/me")
+    .accept("application/json")
+    .set("Authorization", `Bearer ${token}`);
+
+  expect(res2.statusCode).toBe(401);
+});

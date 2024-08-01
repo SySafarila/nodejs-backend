@@ -15,7 +15,7 @@ const authMiddleware = async (
     const jwt = authorization?.split("Bearer ")[1];
 
     const { payload } = await verifyJwt(jwt!);
-    const { user_id } = payload;
+    const { user_id, token_id } = payload;
 
     const token = await prisma.token.findFirst({
       where: {
@@ -66,6 +66,7 @@ const authMiddleware = async (
     });
 
     res.locals.jwt = jwt;
+    res.locals.token_id = token_id;
     res.locals.user_id = user_id;
     res.locals.permissions = permissions;
     res.locals.roles = roles;

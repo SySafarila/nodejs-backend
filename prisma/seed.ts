@@ -12,6 +12,27 @@ async function main() {
       {
         name: "permissions-create",
       },
+      {
+        name: "permissions-read",
+      },
+      {
+        name: "permissions-update",
+      },
+      {
+        name: "permissions-delete",
+      },
+      {
+        name: "roles-create",
+      },
+      {
+        name: "roles-read",
+      },
+      {
+        name: "roles-update",
+      },
+      {
+        name: "roles-delete",
+      },
     ],
   });
 
@@ -32,9 +53,23 @@ async function main() {
       name: "admin",
       level: 1,
       permissions: {
-        connect: {
-          name: "admin-access",
-        },
+        connect: [
+          {
+            name: "admin-access",
+          },
+          {
+            name: "roles-create",
+          },
+          {
+            name: "roles-read",
+          },
+          {
+            name: "roles-update",
+          },
+          {
+            name: "roles-delete",
+          },
+        ],
       },
     },
   });

@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import Joi from "joi";
+import SignedResponseType from "../types/SignedResponseType";
 import CustomError from "../utils/CustomError";
 import errorHandler from "../utils/errorHandler";
 
@@ -9,8 +10,9 @@ type StoreType = {
   level: number;
 };
 
-export const storeRole = async (req: Request, res: Response) => {
+export const storeRole = async (req: Request, res: SignedResponseType) => {
   const { name, level } = req.body as StoreType;
+  const { role_level_peak } = res.locals;
   const prisma = new PrismaClient();
   try {
     const schema: Joi.ObjectSchema<any> = Joi.object({
@@ -22,6 +24,14 @@ export const storeRole = async (req: Request, res: Response) => {
     };
 
     await schema.validateAsync({ name, level } as StoreType, options);
+
+    if (role_level_peak && role_level_peak >= level) {
+      throw new CustomError(
+        `Your peak role level is ${role_level_peak}, you cannot create role with level that higher than your level. Note: lower is higher (1 > 2)`,
+        400
+      );
+    }
+
     const check = await prisma.role.findFirst({
       where: {
         name: name,
@@ -65,8 +75,9 @@ type UpdateType = {
   new_level?: number;
 };
 
-export const updateRole = async (req: Request, res: Response) => {
+export const updateRole = async (req: Request, res: SignedResponseType) => {
   const { name, new_name, new_level } = req.body as UpdateType;
+  const { role_level_peak } = res.locals;
   const prisma = new PrismaClient();
   try {
     const schema: Joi.ObjectSchema<any> = Joi.object({
@@ -82,6 +93,7 @@ export const updateRole = async (req: Request, res: Response) => {
       { name, new_name, new_level } as UpdateType,
       options
     );
+
     const check = await prisma.role.findFirst({
       where: {
         name: name,
@@ -90,6 +102,20 @@ export const updateRole = async (req: Request, res: Response) => {
 
     if (!check) {
       throw new CustomError("Role not found", 404);
+    }
+
+    if (role_level_peak && role_level_peak >= check.level) {
+      throw new CustomError(
+        `Your peak role level is ${role_level_peak}, you cannot update role with level that higher than your level. Note: lower is higher (1 > 2)`,
+        400
+      );
+    }
+
+    if (role_level_peak && new_level && role_level_peak >= new_level) {
+      throw new CustomError(
+        `Your peak role level is ${role_level_peak}, you cannot update role with level that higher than your level. Note: lower is higher (1 > 2)`,
+        400
+      );
     }
 
     const role = await prisma.role.update({
@@ -126,8 +152,9 @@ type DeleteType = {
   name: string;
 };
 
-export const deleteRole = async (req: Request, res: Response) => {
+export const deleteRole = async (req: Request, res: SignedResponseType) => {
   const { name } = req.body as DeleteType;
+  const { role_level_peak } = res.locals;
   const prisma = new PrismaClient();
   try {
     const schema: Joi.ObjectSchema<any> = Joi.object({
@@ -146,6 +173,13 @@ export const deleteRole = async (req: Request, res: Response) => {
 
     if (!check) {
       throw new CustomError("Role not found", 404);
+    }
+
+    if (role_level_peak && role_level_peak >= check.level) {
+      throw new CustomError(
+        `Your peak role level is ${role_level_peak}, you cannot delete role with level that higher than your level. Note: lower is higher (1 > 2)`,
+        400
+      );
     }
 
     await prisma.role.delete({

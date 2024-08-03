@@ -27,6 +27,15 @@ describe("READ permissions", () => {
 
     expect(res.statusCode).toBe(200);
   });
+
+  it("Should fail", async () => {
+    const res = await request(app)
+      .get("/permissions")
+      .accept("application/json")
+      .set("Authorization", `Bearer ${token}xxx`);
+
+    expect(res.statusCode).toBe(401);
+  });
 });
 
 describe("CREATE permission", () => {
@@ -40,6 +49,28 @@ describe("CREATE permission", () => {
       });
 
     expect(res.statusCode).toBe(200);
+  });
+
+  it("Should fail", async () => {
+    const res = await request(app)
+      .put("/permissions")
+      .accept("application/json")
+      .set("Authorization", `Bearer ${token}x`)
+      .send({
+        name: "permissions-readx",
+      });
+
+    expect(res.statusCode).toBe(401);
+
+    const res2 = await request(app)
+      .put("/permissions")
+      .accept("application/json")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "permissions-read",
+      });
+
+    expect(res2.statusCode).toBe(400);
   });
 });
 
@@ -56,6 +87,29 @@ describe("UPDATE permission", () => {
 
     expect(res.statusCode).toBe(200);
   });
+
+  it("Should fail", async () => {
+    const res = await request(app)
+      .patch("/permissions")
+      .accept("application/json")
+      .set("Authorization", `Bearer ${token}xx`)
+      .send({
+        name: "permissions-readx",
+        new_name: "permission-redx2",
+      });
+
+    expect(res.statusCode).toBe(401);
+
+    const res2 = await request(app)
+      .patch("/permissions")
+      .accept("application/json")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "permissions-readx",
+      });
+
+    expect(res2.statusCode).toBe(400);
+  });
 });
 
 describe("DELETE permission", () => {
@@ -69,5 +123,17 @@ describe("DELETE permission", () => {
       });
 
     expect(res.statusCode).toBe(200);
+  });
+
+  it("Should fail", async () => {
+    const res = await request(app)
+      .delete("/permissions")
+      .accept("application/json")
+      .set("Authorization", `Bearer ${token}xxx`)
+      .send({
+        name: "permission-redx2",
+      });
+
+    expect(res.statusCode).toBe(401);
   });
 });

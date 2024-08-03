@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import rootController from "./controllers/rootController";
 import auth from "./routes/auth";
@@ -7,6 +8,7 @@ import roles from "./routes/roles";
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 app.get("/", rootController);
 app.use(auth);

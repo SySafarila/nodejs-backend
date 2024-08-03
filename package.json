@@ -8,11 +8,6 @@
     "build": "npx tsc -b",
     "test": "jest --verbose"
   },
-  "jest": {
-    "transform": {
-      "^.+\\.[t|j]sx?$": "babel-jest"
-    }
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",

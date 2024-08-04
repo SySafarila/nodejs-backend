@@ -8,22 +8,27 @@ import errorHandler from "../utils/errorHandler";
 type StoreType = {
   name: string;
   level: number;
+  permissions: string[];
 };
 
 export const storeRole = async (req: Request, res: SignedResponseType) => {
-  const { name, level } = req.body as StoreType;
+  const { name, level, permissions } = req.body as StoreType;
   const { role_level_peak } = res.locals;
   const prisma = new PrismaClient();
   try {
     const schema: Joi.ObjectSchema<any> = Joi.object({
       name: Joi.string().required(),
       level: Joi.number().required(),
+      permissions: Joi.array().items(Joi.string()).required(),
     });
     const options: Joi.ValidationOptions = {
       abortEarly: false,
     };
 
-    await schema.validateAsync({ name, level } as StoreType, options);
+    await schema.validateAsync(
+      { name, level, permissions } as StoreType,
+      options
+    );
 
     if (role_level_peak && role_level_peak >= level) {
       throw new CustomError(
@@ -42,10 +47,27 @@ export const storeRole = async (req: Request, res: SignedResponseType) => {
       throw new CustomError("Role already exists", 400);
     }
 
+    const validPermissions: { name: string }[] = [];
+
+    const checkValidPermissions = await prisma.permission.findMany({
+      where: {
+        name: {
+          in: permissions,
+        },
+      },
+    });
+
+    checkValidPermissions.forEach((permission) => {
+      validPermissions.push({ name: permission.name });
+    });
+
     const role = await prisma.role.create({
       data: {
         name: name,
         level: level,
+        permissions: {
+          connect: validPermissions,
+        },
       },
     });
 
@@ -73,10 +95,11 @@ type UpdateType = {
   name: string;
   new_name?: string;
   new_level?: number;
+  new_permissions?: string[];
 };
 
 export const updateRole = async (req: Request, res: SignedResponseType) => {
-  const { name, new_name, new_level } = req.body as UpdateType;
+  const { name, new_name, new_level, new_permissions } = req.body as UpdateType;
   const { role_level_peak } = res.locals;
   const prisma = new PrismaClient();
   try {
@@ -84,15 +107,31 @@ export const updateRole = async (req: Request, res: SignedResponseType) => {
       name: Joi.string().required(),
       new_name: Joi.string().optional().max(255),
       new_level: Joi.number().optional(),
+      new_permissions: Joi.array().items(Joi.string()).optional(),
     });
     const options: Joi.ValidationOptions = {
       abortEarly: false,
     };
 
     await schema.validateAsync(
-      { name, new_name, new_level } as UpdateType,
+      { name, new_name, new_level, new_permissions } as UpdateType,
       options
     );
+
+    const validPermissions: { name: string }[] = [];
+    if (new_permissions) {
+      const checkValidPermissions = await prisma.permission.findMany({
+        where: {
+          name: {
+            in: new_permissions,
+          },
+        },
+      });
+
+      checkValidPermissions.forEach((permission) => {
+        validPermissions.push({ name: permission.name });
+      });
+    }
 
     const check = await prisma.role.findFirst({
       where: {
@@ -118,7 +157,7 @@ export const updateRole = async (req: Request, res: SignedResponseType) => {
       );
     }
 
-    const role = await prisma.role.update({
+    const updateRole = await prisma.role.update({
       where: {
         name: name,
       },
@@ -128,14 +167,52 @@ export const updateRole = async (req: Request, res: SignedResponseType) => {
       },
     });
 
+    if (new_permissions) {
+      const updateRolePermissions = await prisma.role.update({
+        where: {
+          name: name,
+        },
+        data: {
+          permissions: {
+            set: validPermissions,
+          },
+        },
+        select: {
+          name: true,
+          id: true,
+          level: true,
+          created_at: true,
+          updated_at: true,
+          permissions: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
+
+      res.json({
+        message: "Success",
+        data: {
+          id: updateRolePermissions.id,
+          name: updateRolePermissions.name,
+          level: updateRolePermissions.level,
+          created_at: updateRolePermissions.created_at,
+          updated_at: updateRolePermissions.updated_at,
+          permissions: updateRolePermissions.permissions,
+        },
+      });
+      return;
+    }
+
     res.json({
       message: "Success",
       data: {
-        id: role.id,
-        name: role.name,
-        level: role.level,
-        created_at: role.created_at,
-        updated_at: role.updated_at,
+        id: updateRole.id,
+        name: updateRole.name,
+        level: updateRole.level,
+        created_at: updateRole.created_at,
+        updated_at: updateRole.updated_at,
       },
     });
     return;
@@ -207,6 +284,13 @@ export const readRole = async (req: Request, res: Response) => {
     const roles = await prisma.role.findMany({
       orderBy: {
         name: "asc",
+      },
+      include: {
+        permissions: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 

@@ -66,6 +66,7 @@ describe("CREATE role", () => {
       .send({
         name: "basic-user",
         level: 5,
+        permissions: ["admin-access", "permissions-read"],
       });
 
     expect(res.statusCode).toBe(200);
@@ -122,6 +123,18 @@ describe("UPDATE roles", () => {
     expect(res2.statusCode).toBe(200);
     expect(res2.body.data.name).toBe("advanced-user");
     expect(res2.body.data.level).toBe(1);
+
+    const res3 = await request(app)
+      .patch("/roles")
+      .accept("application/json")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "advanced-user",
+        permissions: ["a", "permissions-read"],
+      });
+
+    expect(res3.statusCode).toBe(200);
+    expect(res3.body.data.name).toBe("advanced-user");
   });
 
   it("Should fail", async () => {

@@ -1,5 +1,6 @@
 import Joi from "joi";
 import CustomError from "./CustomError";
+import logger from "./logger";
 
 const errorHandler = (error: any): { code: number; message: string } => {
   let code: number | undefined = undefined;
@@ -8,14 +9,12 @@ const errorHandler = (error: any): { code: number; message: string } => {
   if (error instanceof Joi.ValidationError) {
     code = 400;
     message = error.message;
-  }
-
-  if (error instanceof CustomError) {
+  } else if (error instanceof CustomError) {
     code = error.code;
     message = error.message;
+  } else {
+    logger.error(error.message ?? "Internal server error");
   }
-
-  // console.error(error.message ?? "Internal server error");
 
   return {
     code: code ?? 500,

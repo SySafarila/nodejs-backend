@@ -22,4 +22,5 @@ jobs:
       - run: npx prisma migrate deploy
       - run: npx prisma db seed
       - run: npm test
+      - run: npm run build
       - run: docker compose down

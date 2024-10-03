@@ -1,9 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { NextFunction, Request } from "express";
+import Cookies from "../types/Cookies";
+import { ErrorResponse } from "../types/ErrorResponseType";
 import SignedResponseType from "../types/SignedResponseType";
 import CustomError from "../utils/CustomError";
 import verifyJwt from "../utils/verifyJwt";
-import { ErrorResponse } from "../types/ErrorResponseType";
 
 const authMiddleware = async (
   req: Request,
@@ -11,9 +12,19 @@ const authMiddleware = async (
   next: NextFunction
 ) => {
   try {
+    const cookies: Cookies = req.cookies;
     const prisma = new PrismaClient();
     const { authorization } = req.headers;
-    const jwt = authorization?.split("Bearer ")[1];
+
+    let jwt = authorization?.split("Bearer ")[1];
+
+    if (cookies.access_token) {
+      jwt = cookies.access_token;
+    }
+
+    if (!jwt) {
+      throw new CustomError("Token required", 401);
+    }
 
     const { payload } = await verifyJwt(jwt!);
     const { user_id, token_id } = payload;

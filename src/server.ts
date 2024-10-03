@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import rootController from "./controllers/rootController";
@@ -8,6 +9,7 @@ import roles from "./routes/roles";
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors());
 
 app.get("/", rootController);

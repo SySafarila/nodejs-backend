@@ -3,6 +3,7 @@ import { NextFunction, Request } from "express";
 import SignedResponseType from "../types/SignedResponseType";
 import CustomError from "../utils/CustomError";
 import verifyJwt from "../utils/verifyJwt";
+import { ErrorResponse } from "../types/ErrorResponseType";
 
 const authMiddleware = async (
   req: Request,
@@ -77,12 +78,12 @@ const authMiddleware = async (
     if (error instanceof CustomError) {
       res.status(error.code).json({
         message: error.message,
-      });
+      } as ErrorResponse);
       return;
     }
     res.status(401).json({
       message: error.message ?? "Unauthorized request",
-    });
+    } as ErrorResponse);
   }
 };
 

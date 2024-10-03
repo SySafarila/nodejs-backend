@@ -1,22 +1,26 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import Joi from "joi";
+import { ErrorResponse } from "../types/ErrorResponseType";
+import {
+  DeleteParams,
+  DeleteResponseSuccess,
+  ReadResponseSuccess,
+  StoreParams,
+  StoreResponseSuccess,
+  UpdateParams,
+  UpdateResponseSuccess,
+} from "../types/RoleType";
 import SignedResponseType from "../types/SignedResponseType";
 import CustomError from "../utils/CustomError";
 import errorHandler from "../utils/errorHandler";
 
-type StoreType = {
-  name: string;
-  level: number;
-  permissions: string[];
-};
-
 export const storeRole = async (req: Request, res: SignedResponseType) => {
-  const { name, level, permissions } = req.body as StoreType;
+  const { name, level, permissions } = req.body as StoreParams;
   const { role_level_peak } = res.locals;
   const prisma = new PrismaClient();
   try {
-    const schema: Joi.ObjectSchema<any> = Joi.object({
+    const schema: Joi.ObjectSchema<StoreParams> = Joi.object({
       name: Joi.string().required(),
       level: Joi.number().required(),
       permissions: Joi.array().items(Joi.string()).required(),
@@ -26,7 +30,7 @@ export const storeRole = async (req: Request, res: SignedResponseType) => {
     };
 
     await schema.validateAsync(
-      { name, level, permissions } as StoreType,
+      { name, level, permissions } as StoreParams,
       options
     );
 
@@ -80,30 +84,24 @@ export const storeRole = async (req: Request, res: SignedResponseType) => {
         created_at: role.created_at,
         updated_at: role.updated_at,
       },
-    });
+    } as StoreResponseSuccess);
     return;
   } catch (error: any) {
     const handler = errorHandler(error);
 
     res.status(handler.code).json({
       message: handler.message,
-    });
+    } as ErrorResponse);
   }
 };
 
-type UpdateType = {
-  name: string;
-  new_name?: string;
-  new_level?: number;
-  new_permissions?: string[];
-};
-
 export const updateRole = async (req: Request, res: SignedResponseType) => {
-  const { name, new_name, new_level, new_permissions } = req.body as UpdateType;
+  const { name, new_name, new_level, new_permissions } =
+    req.body as UpdateParams;
   const { role_level_peak } = res.locals;
   const prisma = new PrismaClient();
   try {
-    const schema: Joi.ObjectSchema<any> = Joi.object({
+    const schema: Joi.ObjectSchema<UpdateParams> = Joi.object({
       name: Joi.string().required(),
       new_name: Joi.string().optional().max(255),
       new_level: Joi.number().optional(),
@@ -114,7 +112,7 @@ export const updateRole = async (req: Request, res: SignedResponseType) => {
     };
 
     await schema.validateAsync(
-      { name, new_name, new_level, new_permissions } as UpdateType,
+      { name, new_name, new_level, new_permissions } as UpdateParams,
       options
     );
 
@@ -201,7 +199,7 @@ export const updateRole = async (req: Request, res: SignedResponseType) => {
           updated_at: updateRolePermissions.updated_at,
           permissions: updateRolePermissions.permissions,
         },
-      });
+      } as UpdateResponseSuccess);
       return;
     }
 
@@ -214,34 +212,30 @@ export const updateRole = async (req: Request, res: SignedResponseType) => {
         created_at: updateRole.created_at,
         updated_at: updateRole.updated_at,
       },
-    });
+    } as UpdateResponseSuccess);
     return;
   } catch (error: any) {
     const handler = errorHandler(error);
 
     res.status(handler.code).json({
       message: handler.message,
-    });
+    } as ErrorResponse);
   }
 };
 
-type DeleteType = {
-  name: string;
-};
-
 export const deleteRole = async (req: Request, res: SignedResponseType) => {
-  const { name } = req.body as DeleteType;
+  const { name } = req.body as DeleteParams;
   const { role_level_peak } = res.locals;
   const prisma = new PrismaClient();
   try {
-    const schema: Joi.ObjectSchema<any> = Joi.object({
+    const schema: Joi.ObjectSchema<DeleteParams> = Joi.object({
       name: Joi.string().required(),
     });
     const options: Joi.ValidationOptions = {
       abortEarly: false,
     };
 
-    await schema.validateAsync({ name } as DeleteType, options);
+    await schema.validateAsync({ name } as DeleteParams, options);
     const check = await prisma.role.findFirst({
       where: {
         name: name,
@@ -267,14 +261,14 @@ export const deleteRole = async (req: Request, res: SignedResponseType) => {
 
     res.json({
       message: "Success",
-    });
+    } as DeleteResponseSuccess);
     return;
   } catch (error: any) {
     const handler = errorHandler(error);
 
     res.status(handler.code).json({
       message: handler.message,
-    });
+    } as ErrorResponse);
   }
 };
 
@@ -297,13 +291,13 @@ export const readRole = async (req: Request, res: Response) => {
     res.json({
       message: "Success",
       data: roles,
-    });
+    } as ReadResponseSuccess);
     return;
   } catch (error: any) {
     const handler = errorHandler(error);
 
     res.status(handler.code).json({
       message: handler.message,
-    });
+    } as ErrorResponse);
   }
 };

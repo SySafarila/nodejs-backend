@@ -2,16 +2,17 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import Joi from "joi";
-import RegisterType from "../types/RegisterType";
+import { ErrorResponse } from "../types/ErrorResponseType";
+import { RegisterParams, RegisterResponseSuccess } from "../types/RegisterType";
 import CustomError from "../utils/CustomError";
 import errorHandler from "../utils/errorHandler";
 
 const registerController = async (req: Request, res: Response) => {
-  const { email, password, name } = req.body as RegisterType;
+  const { email, password, name } = req.body as RegisterParams;
   const prisma = new PrismaClient();
 
   try {
-    const schema: Joi.ObjectSchema<any> = Joi.object({
+    const schema: Joi.ObjectSchema<RegisterParams> = Joi.object({
       email: Joi.string().email().required(),
       password: Joi.string().min(8).required(),
       name: Joi.string().required(),
@@ -21,7 +22,7 @@ const registerController = async (req: Request, res: Response) => {
     };
 
     await schema.validateAsync(
-      { email, password, name } as RegisterType,
+      { email, password, name } as RegisterParams,
       options
     );
 
@@ -47,13 +48,16 @@ const registerController = async (req: Request, res: Response) => {
 
     res.json({
       message: "Register success",
-    });
+      user: {
+        name: name,
+      },
+    } as RegisterResponseSuccess);
   } catch (error: any) {
     const handler = errorHandler(error);
 
     res.status(handler.code).json({
       message: handler.message,
-    });
+    } as ErrorResponse);
   }
 };
 

@@ -1,7 +1,12 @@
-type RegisterType = {
+export type RegisterParams = {
   email: string;
   password: string;
   name: string;
 };
 
-export default RegisterType;
+export type RegisterResponseSuccess = {
+  message: string;
+  user: {
+    name: string;
+  };
+};

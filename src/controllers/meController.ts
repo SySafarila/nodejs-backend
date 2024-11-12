@@ -1,14 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import { Request } from "express";
-import { ErrorResponse } from "../types/ErrorResponseType";
-import SignedResponseType from "../types/SignedResponseType";
-import { CurrentUserResponseSuccess } from "../types/UserType";
-import CustomError from "../utils/CustomError";
+import { Request, Response } from "express";
+import Locals from "../types/locals";
+import { CurrentUserSuccess, ErrorResponse } from "../types/Responses";
 import errorHandler from "../utils/errorHandler";
+import HTTPError from "../utils/HTTPError";
 
-const meController = async (req: Request, res: SignedResponseType) => {
+const meController = async (req: Request, res: Response) => {
   const prisma = new PrismaClient();
-  const { user_id } = res.locals;
+  const { user_id } = res.locals as Locals;
 
   try {
     const user = await prisma.user.findFirst({
@@ -18,7 +17,7 @@ const meController = async (req: Request, res: SignedResponseType) => {
     });
 
     if (!user) {
-      throw new CustomError("User not found", 404);
+      throw new HTTPError("User not found", 404);
     }
 
     res.json({
@@ -31,7 +30,7 @@ const meController = async (req: Request, res: SignedResponseType) => {
         updated_at: user?.updated_at,
         created_at: user?.created_at,
       },
-    } as CurrentUserResponseSuccess);
+    } as CurrentUserSuccess);
   } catch (error: any) {
     const handler = errorHandler(error);
 

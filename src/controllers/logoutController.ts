@@ -1,13 +1,12 @@
 import { PrismaClient } from "@prisma/client";
-import { Request } from "express";
-import SignedResponseType from "../types/SignedResponseType";
-import CustomError from "../utils/CustomError";
+import { Request, Response } from "express";
+import Locals from "../types/locals";
+import { ErrorResponse, LogoutSuccess } from "../types/Responses";
 import errorHandler from "../utils/errorHandler";
-import { LogoutResponseSuccess } from "../types/LogoutType";
-import { ErrorResponse } from "../types/ErrorResponseType";
+import HTTPError from "../utils/HTTPError";
 
-const logoutController = async (req: Request, res: SignedResponseType) => {
-  const { token_id } = res.locals;
+const logoutController = async (req: Request, res: Response) => {
+  const { token_id } = res.locals as Locals;
   const prisma = new PrismaClient();
 
   try {
@@ -18,7 +17,7 @@ const logoutController = async (req: Request, res: SignedResponseType) => {
     });
 
     if (!findToken) {
-      throw new CustomError("Token not found", 404);
+      throw new HTTPError("Token not found", 404);
     }
 
     await prisma.token.update({
@@ -32,7 +31,7 @@ const logoutController = async (req: Request, res: SignedResponseType) => {
 
     res.json({
       message: "Logout success",
-    } as LogoutResponseSuccess);
+    } as LogoutSuccess);
   } catch (error: any) {
     const handler = errorHandler(error);
 
